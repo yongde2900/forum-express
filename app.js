@@ -9,6 +9,7 @@ const passport = require('./config/passport')
 const app = express()
 const port = 3000
 
+app.use('/upload', express.static(__dirname + '/upload'))
 app.engine('hbs', exphbs({defaultLayout: 'main', extname: 'hbs'}) )
 app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({extended: true}))
@@ -17,6 +18,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
 app.use(methodOverride('_method'))
+
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash('success_msg')
   res.locals.error_msg = req.flash('error_msg')
