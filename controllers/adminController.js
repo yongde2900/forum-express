@@ -28,6 +28,33 @@ let adminController = {
             .then(restaurant => {
                 return res.render('admin/restaurant', {restaurant})
             })
+    },
+    editRestaurant: (req, res) => {
+        return Restaurant.findByPk(req.params.id, {raw: true})
+            .then(restaurant => {
+                return res.render('admin/create', {restaurant})
+            })
+    },
+    putRestaurant: (req, res) => {
+        const{name, tel, address, opening_hours, description} =req.body
+        if(!req.body.name){
+            req.flash('error_msg', "Name didn't exist")
+            return res.redirect('back')
+        }
+        return Restaurant.findByPk(req.params.id)
+            .then(restaurant => restaurant.update({name, tel, address, opening_hours, description}))
+            .then(restaurant => {
+                req.flash('success_msg', 'restaurant was successfully to update')
+                res.redirect('/admin/restaurants')
+            })
+    },
+    deleteRestaurant: (req, res) => {
+        return Restaurant.findByPk(req.params.id)
+            .then(restaurant => restaurant.destroy())
+            .then(() => {
+                req.flash('success_msg', 'restaurant was successfully to delete')
+                res.redirect('/admin/restaurants')
+            })
     }
 }
 module.exports = adminController
