@@ -2,8 +2,8 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const fs = require('fs')
 const db = require('../models')
-const restaurant = require('../models/restaurant')
 const Restaurant = db.Restaurant
+const User = db.User
 
 let adminController = {
     getRestaurants: (req, res) => {
@@ -80,6 +80,13 @@ let adminController = {
             .then(() => {
                 req.flash('success_msg', 'restaurant was successfully to delete')
                 res.redirect('/admin/restaurants')
+            })
+    },
+    getUser: (req, res) => {
+        return User.findAll({raw: true})
+            .then(user => {
+                console.log(user)
+                res.render('admin/users', {user})
             })
     }
 }
