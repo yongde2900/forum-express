@@ -15,13 +15,18 @@
     "logging": false
   },
   "production": {
-    "use_env_variable": "CLEARDB_SILVER_URL"
+    "use_env_varible": "DATABEASE_URL",
+    "dialect": "postgres",
+    "protocol": "postgres",
+    "dialectOptions": {
+      "ssl": true
+    }
   },
-  "travis": {
-    "username": "travis",
-    "database": "forum_test",
-    "host": "127.0.0.1",
-    "dialect": "mysql",
-    "logging": false
+    "travis": {
+      "username": "travis",
+      "database": "forum_test",
+      "host": "127.0.0.1",
+      "dialect": "mysql",
+      "logging": false
+    }
   }
-}
