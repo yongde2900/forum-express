@@ -15,7 +15,7 @@
     "logging": false
   },
   "production": {
-    "use_env_varible": "DATABEASE_URL",
+    "use_env_variable": "DATABEASE_URL",
     "dialect": "postgres",
     "protocol": "postgres",
     "dialectOptions": {
