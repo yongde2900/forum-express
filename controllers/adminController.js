@@ -1,5 +1,8 @@
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = '3ec6116b624e459'
 const fs = require('fs')
 const db = require('../models')
+const restaurant = require('../models/restaurant')
 const Restaurant = db.Restaurant
 
 let adminController = {
@@ -20,15 +23,13 @@ let adminController = {
             return res.redirect('back')
         }
         if (file) {
-            fs.readFile(file.path, (err, data) => {
-                if (err) return console.log(err)
-                fs.writeFile(`upload/${file.originalname}`, data, () => {
-                    return Restaurant.create({ name, tel, address, opening_hours, description, image: file ? `/upload/${file.originalname}` : null })
-                        .then((restaurant) => {
-                            req.flash('success_msg', 'restaurant was successfully created!')
-                            res.redirect('/admin/restaurants')
-                        })
-                })
+            imgur.setClientID(IMGUR_CLIENT_ID)
+            imgur.upload(file.path, (err, img) => {
+                return Restaurant.create({name, tel, address, opening_hours, description, image: file ? img.data.link : null})
+                    .then(restaurant => {
+                        req.flash('success_msg', 'restaurant was successfully created')
+                        res.redirect('/admin/restaurants')
+                    })
             })
         } else {
             return Restaurant.create({ name, tel, address, opening_hours, description, image: null })
@@ -60,11 +61,9 @@ let adminController = {
         return Restaurant.findByPk(req.params.id)
             .then(restaurant => {
                 if (file) {
-                    fs.readFile(file.path, (err, data) => {
-                        if (err) return console.log(err)
-                        fs.writeFile(`upload/${file.originalname}`, data, () => {
-                            restaurant.update({ name, tel, opening_hours, address, description, image: file ? `/upload/${file.originalname}` : restaurant.image })
-                        })
+                    img.setClientID(IMGUR_CLIENT_ID)
+                    img.upload(file.path, (err,img) => {
+                        restaurant.update({name, tel, address, opening_hours, description, image: file ? img.data.link : restaurant.img})
                     })
                 } else {
                     restaurant.update({ name, tel, opening_hours, address, description, image: restaurant.image })
