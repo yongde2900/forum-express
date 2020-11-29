@@ -19,7 +19,7 @@ app.use(passport.session())
 app.use(flash())
 app.use(methodOverride('_method'))
 if(process.env.NODE_ENV !== 'production') {
-  require('dot-env').config()
+  require('dotenv').config()
 }
 
 app.use((req, res, next) => {
