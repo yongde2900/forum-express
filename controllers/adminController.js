@@ -89,14 +89,11 @@ let adminController = {
                 res.render('admin/users', {user})
             })
     },
-    toddleAdmin: (req, res) => {
+    toggleAdmin: (req, res) => {
         return User.findByPk(req.params.id)
             .then(user => {
-                if(user.isAdmin){
-                    user.update({isAdmin: false})
-                }else{
-                    user.update({isAdmin: true})
-                }
+                const changed2Admin = !user.isAdmin
+                user.update({isAdmin: changed2Admin})
             })
             .then(user => {
                 req.flash('success_msg', 'User was successfully to updated')
