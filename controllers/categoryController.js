@@ -6,9 +6,9 @@ let categoryController = {
         .then(categories => {
             if(req.params.id) {
                 category = categories.find(obj => obj.id == req.params.id)
-                res.render('admin/category/categories', {categories, category})
+                res.render('admin/categories', {categories, category})
             }else{
-                res.render('admin/category/categories', {categories})
+                res.render('admin/categories', {categories})
             }
         })
     },
