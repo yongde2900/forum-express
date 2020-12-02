@@ -19,11 +19,15 @@ let adminController = {
             })
     },
     createRestaurants: (req, res) => {
-        return res.render('admin/create')
+        Category.findAll({ raw: true })
+            .then(categories => {
+                return res.render('admin/create', { categories })
+            })
     },
     postRestaurant: (req, res) => {
-        const { name, tel, address, opening_hours, description } = req.body
+        const { name, tel, address, opening_hours, description, categoryId } = req.body
         const { file } = req
+        console.log('#$%^&', categoryId, req.body)
         if (!req.body.name) {
             req.flash('error_msg', "Name didn't exist")
             return res.redirect('back')
@@ -31,14 +35,28 @@ let adminController = {
         if (file) {
             imgur.setClientID(IMGUR_CLIENT_ID)
             imgur.upload(file.path, (err, img) => {
-                return Restaurant.create({ name, tel, address, opening_hours, description, image: file ? img.data.link : null })
+                return Restaurant.create({
+                    name,
+                    tel,
+                    address,
+                    opening_hours,
+                    description, image: file ? img.data.link : null,
+                    CategoryId: categoryId
+                })
                     .then(restaurant => {
                         req.flash('success_msg', 'restaurant was successfully created')
                         res.redirect('/admin/restaurants')
                     })
             })
         } else {
-            return Restaurant.create({ name, tel, address, opening_hours, description, image: null })
+            return Restaurant.create({
+                name,
+                tel,
+                address,
+                opening_hours,
+                description, image: null,
+                CategoryId: categoryId
+            })
                 .then(restaurant => {
                     req.flash('success_msg', 'restaurant was successfully created!')
                     res.redirect('/admin/restaurants')
@@ -56,13 +74,19 @@ let adminController = {
             })
     },
     editRestaurant: (req, res) => {
-        return Restaurant.findByPk(req.params.id, { raw: true })
+        return Restaurant.findByPk(req.params.id, {
+            raw: true,
+            nest: true,
+        })
             .then(restaurant => {
-                return res.render('admin/create', { restaurant })
+                Category.findAll({raw: true})
+                    .then(categories => {
+                        return res.render('admin/create', {restaurant, categories})
+                    })
             })
     },
     putRestaurant: (req, res) => {
-        const { name, tel, address, opening_hours, description } = req.body
+        const { name, tel, address, opening_hours, description, categoryId } = req.body
         const { file } = req
         if (!req.body.name) {
             req.flash('error_msg', "Name didn't exist")
@@ -73,10 +97,25 @@ let adminController = {
                 if (file) {
                     img.setClientID(IMGUR_CLIENT_ID)
                     img.upload(file.path, (err, img) => {
-                        restaurant.update({ name, tel, address, opening_hours, description, image: file ? img.data.link : restaurant.img })
+                        restaurant.update({
+                            name,
+                            tel,
+                            address,
+                            opening_hours,
+                            description,
+                            image: file ? img.data.link : restaurant.img,
+                            CategoryId: categoryId
+                        })
                     })
                 } else {
-                    restaurant.update({ name, tel, opening_hours, address, description, image: restaurant.image })
+                    restaurant.update({
+                        name,
+                        tel,
+                        opening_hours,
+                        address,
+                        description, image: restaurant.image,
+                        CategoryId: categoryId
+                    })
                 }
             })
             .then(restaurant => {
