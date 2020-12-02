@@ -2,14 +2,19 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const fs = require('fs')
 const db = require('../models')
-const user = require('../models/user')
+const Category = db.Category
 const Restaurant = db.Restaurant
 const User = db.User
 
 let adminController = {
     getRestaurants: (req, res) => {
-        return Restaurant.findAll({ raw: true })
+        return Restaurant.findAll({
+            raw: true,
+            nest: true,
+            include: [Category]
+        })
             .then(restaurants => {
+                console.log(restaurants[2])
                 return res.render('admin/restaurants', { restaurants })
             })
     },
@@ -26,7 +31,7 @@ let adminController = {
         if (file) {
             imgur.setClientID(IMGUR_CLIENT_ID)
             imgur.upload(file.path, (err, img) => {
-                return Restaurant.create({name, tel, address, opening_hours, description, image: file ? img.data.link : null})
+                return Restaurant.create({ name, tel, address, opening_hours, description, image: file ? img.data.link : null })
                     .then(restaurant => {
                         req.flash('success_msg', 'restaurant was successfully created')
                         res.redirect('/admin/restaurants')
@@ -41,7 +46,11 @@ let adminController = {
         }
     },
     getRestaurant: (req, res) => {
-        return Restaurant.findByPk(req.params.id, { raw: true })
+        return Restaurant.findByPk(req.params.id, {
+            raw: true,
+            nest: true,
+            include: [Category]
+        })
             .then(restaurant => {
                 return res.render('admin/restaurant', { restaurant })
             })
@@ -63,8 +72,8 @@ let adminController = {
             .then(restaurant => {
                 if (file) {
                     img.setClientID(IMGUR_CLIENT_ID)
-                    img.upload(file.path, (err,img) => {
-                        restaurant.update({name, tel, address, opening_hours, description, image: file ? img.data.link : restaurant.img})
+                    img.upload(file.path, (err, img) => {
+                        restaurant.update({ name, tel, address, opening_hours, description, image: file ? img.data.link : restaurant.img })
                     })
                 } else {
                     restaurant.update({ name, tel, opening_hours, address, description, image: restaurant.image })
@@ -84,16 +93,16 @@ let adminController = {
             })
     },
     getUser: (req, res) => {
-        return User.findAll({raw: true})
+        return User.findAll({ raw: true })
             .then(user => {
-                res.render('admin/users', {user})
+                res.render('admin/users', { user })
             })
     },
     toggleAdmin: (req, res) => {
         return User.findByPk(req.params.id)
             .then(user => {
                 const changed2Admin = !user.isAdmin
-                user.update({isAdmin: changed2Admin})
+                user.update({ isAdmin: changed2Admin })
             })
             .then(user => {
                 req.flash('success_msg', 'User was successfully to updated')
