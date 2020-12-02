@@ -1,0 +1,39 @@
+<h1>餐廳後台</h1>
+{{>admin}}
+<br/>
+
+    <form action="/admin/caegories" method="POST">
+    <input type="text" name="name" id="name" placeholder="Create new category">
+    <button class="btn btn-primary">Submit</button>
+    </form>
+
+<hr>
+<br/>
+{{> msg}}
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Category Name</th>
+      <th scope="col">#</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each categories}}
+    <tr>
+      <th scope="row">{{this.id}}</th>
+      <td>{{this.name}}</td>
+      <td>
+        <button type="button" class="btn btn-link">
+          <a href="/admin/categories/{{this.id}}/edit">
+            Edit
+          </a>
+        </button>
+        <form action="/admin/categories/{{this.id}}?_method=DELETE" method="POST" style="display: inline;">
+          <button type="submit" class="btn btn-link">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
