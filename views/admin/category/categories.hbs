@@ -2,10 +2,14 @@
 {{>admin}}
 <br />
 {{#if category}}
+<div class="d-flex align-items-stretch">
 <form action="/admin/categories/{{category.id}}?_method=PUT" method="POST">
     <input type="text" name="name" id="name" placeholder="Edit #{{category.id}} category name">
     <button class="btn btn-primary">Submit</button>
 </form>
+<p class="lead mx-2">or</p> 
+<a href="/admin/categories"><button class="btn btn-primary">create new category</button></a>
+</div>
 {{else}}
 <form action="/admin/categories" method="POST">
     <input type="text" name="name" id="name" placeholder="Create new category">
