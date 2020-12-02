@@ -2,14 +2,13 @@
 {{>admin}}
 <br/>
 
-    <form action="/admin/caegories" method="POST">
+    <form action="/admin/categories" method="POST">
     <input type="text" name="name" id="name" placeholder="Create new category">
     <button class="btn btn-primary">Submit</button>
     </form>
-
+{{> msg}}
 <hr>
 <br/>
-{{> msg}}
 <table class="table">
   <thead class="thead-dark">
     <tr>
