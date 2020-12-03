@@ -14,7 +14,6 @@ let adminController = {
             include: [Category]
         })
             .then(restaurants => {
-                console.log(restaurants[2])
                 return res.render('admin/restaurants', { restaurants })
             })
     },
@@ -27,7 +26,6 @@ let adminController = {
     postRestaurant: (req, res) => {
         const { name, tel, address, opening_hours, description, categoryId } = req.body
         const { file } = req
-        console.log('#$%^&', categoryId, req.body)
         if (!req.body.name) {
             req.flash('error_msg', "Name didn't exist")
             return res.redirect('back')

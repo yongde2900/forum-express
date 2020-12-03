@@ -40,6 +40,15 @@ let userController = {
         req.flash('success_msg', '成功登出！')
         req.logout()
         res.redirect('/signin')
+    },
+    getUser: (req, res) => {
+        if(req.user.id !== Number(req.params.id)){
+            return res.redirect('/restaurants')
+        }
+        User.findByPk(req.params.id)
+            .then(user => {
+                res.render('profile', {user: user.toJSON()})
+            })
     }
 }
 
