@@ -93,8 +93,8 @@ let adminController = {
         return Restaurant.findByPk(req.params.id)
             .then(restaurant => {
                 if (file) {
-                    img.setClientID(IMGUR_CLIENT_ID)
-                    img.upload(file.path, (err, img) => {
+                    imgur.setClientID(IMGUR_CLIENT_ID)
+                    imgur.upload(file.path, (err, img) => {
                         restaurant.update({
                             name,
                             tel,

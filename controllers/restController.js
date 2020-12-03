@@ -17,6 +17,8 @@ let restController = {
           whereQuery.categoryId = categoryId
         }
         Restaurant.findAndCountAll({
+          raw: true,
+          nest: true,
           include: [Category],
           where: whereQuery,
           offset: offset,
@@ -31,9 +33,8 @@ let restController = {
     
           // clean up restaurant data
           const data = result.rows.map(r => ({
-            ...r.dataValues,
-            description: r.dataValues.description.substring(0, 50),
-            categoryName: r.dataValues.Category.name
+            ...r,
+            description: r.description.substring(0, 50),
           }))
           Category.findAll({
             raw: true,
@@ -54,7 +55,6 @@ let restController = {
     getRestaurant: (req, res) => {
         Restaurant.findByPk(req.params.id, { include: [Category, {model: Comment, include: [User]}]})
             .then(restaurant => {
-                console.log(restaurant.toJSON())
                 res.render('restaurant', { restaurant: restaurant.toJSON()})
             })
     }
