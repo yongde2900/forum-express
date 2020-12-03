@@ -1,6 +1,8 @@
 const db = require('../models')
 const Restaurant = db.Restaurant
 const Category = db.Category
+const Comment = db.Comment
+const User = db.User
 const pageLimit = 12
 let restController = {
     getRestaurants: (req, res) => {
@@ -15,7 +17,7 @@ let restController = {
           whereQuery.categoryId = categoryId
         }
         Restaurant.findAndCountAll({
-          include: Category,
+          include: [Category],
           where: whereQuery,
           offset: offset,
           limit: pageLimit
@@ -50,9 +52,10 @@ let restController = {
         })
       },
     getRestaurant: (req, res) => {
-        Restaurant.findByPk(req.params.id, { include: [Category] })
+        Restaurant.findByPk(req.params.id, { include: [Category, {model: Comment, include: [User]}]})
             .then(restaurant => {
-                res.render('restaurant', { restaurant: restaurant.toJSON() })
+                console.log(restaurant.toJSON())
+                res.render('restaurant', { restaurant: restaurant.toJSON()})
             })
     }
 }
