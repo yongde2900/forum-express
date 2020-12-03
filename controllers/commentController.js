@@ -1,4 +1,5 @@
 const db = require('../models')
+const comment = require('../models/comment')
 const Comment = db.Comment
 
 const commentController = {
@@ -9,6 +10,13 @@ const commentController = {
             UserId: req.user.id
         })
             .then(() => res.redirect(`/restaurants/${req.body.restaurantId}`))
+    },
+    deleteComment: (req, res) => {
+        Comment.findByPk(req.params.id)
+            .then(comment => {
+                comment.destroy()
+                return res.redirect(`/restaurants/${comment.RestaurantId}`)
+            })
     }
 }
 
