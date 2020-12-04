@@ -21,6 +21,12 @@ module.exports = (app, passport) => {
     }
     res.redirect('/signin')
   }
+  const authenticatedUser = (req, res, next) => {
+    if(helpers.ensureAuthenticated(req) || Number(req.params.id) === helpers.getUser(req).id){
+      return next()
+    }
+    res.redirect(`/users/${req.params.id}`)
+  }
   //restaurant
   app.get('/', authenticated, (req, res) => res.redirect('/restaurants'))
   app.get('/restaurants', authenticated, restController.getRestaurants)
@@ -62,6 +68,6 @@ module.exports = (app, passport) => {
 
   app.get('/users/:id', authenticated, userController.getUser)
   app.get('/users/:id/edit', authenticated, userController.editUser)
-  app.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
+  app.put('/users/:id', authenticatedUser, upload.single('image'), userController.putUser)
 }
 

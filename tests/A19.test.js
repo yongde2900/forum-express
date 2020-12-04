@@ -96,6 +96,7 @@ describe('# A19: 建立 User Profile', function() {
         .send({name: 'User1User1'})
         .end(function(err, res) {
           db.User.findByPk(1).then(user => {
+            console.log(user.name)
             user.name.should.equal('User1User1');
             return done();
           })

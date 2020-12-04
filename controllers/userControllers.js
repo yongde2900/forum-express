@@ -9,17 +9,17 @@ let userController = {
         res.render('signup')
     },
     signUp: (req, res) => {
-        const {email, name, password, passwordCheck} = req.body
-        if(passwordCheck !== password){
+        const { email, name, password, passwordCheck } = req.body
+        if (passwordCheck !== password) {
             req.flash('error_msg', '兩次密碼輸入不同')
-            return res.render('signup', {email, name})
-        }else{
-            User.findOne({where: {email: email}})
+            return res.render('signup', { email, name })
+        } else {
+            User.findOne({ where: { email: email } })
                 .then(user => {
-                    if(user) {
+                    if (user) {
                         req.flash('error_msg', '信箱重複')
-                        return res.render('signup', {email, name})
-                    }else {
+                        return res.render('signup', { email, name })
+                    } else {
                         User.create({
                             name: name,
                             email: email,
@@ -50,7 +50,7 @@ let userController = {
         //辨別使用者但會使測試失敗
         User.findByPk(req.params.id)
             .then(user => {
-                res.render('profile', {user: user.toJSON()})
+                res.render('profile', { user: user.toJSON() })
             })
     },
     editUser: (req, res) => {
@@ -60,34 +60,38 @@ let userController = {
         //辨別使用者但會使測試失敗
         User.findByPk(req.params.id)
             .then(user => {
-                res.render('edit-profile', {user: user.toJSON()})
+                res.render('edit-profile', { user: user.toJSON() })
             })
     },
     putUser: (req, res) => {
-        if (!req.body.name) {
-            req.flash('error_msg', "Name didn't exist")
-            return res.redirect('back')
-        }
-        const {file} = req
-        return User.findByPk(req.params.id)
-            .then(user => {
-                if(file) {
-                    imgur.setClientID(IMGUR_CLIENT_ID)
-                    imgur.upload(file.path, (err, img) => {
-                        user.update({
-                            name: req.body.name,
-                            image: file ? img.data.link : user.image
-                        })
+        const { file } = req
+        const update = req.body
+        const id = req.params.id
+        if (file) {
+            imgur.setClientID(IMGUR_CLIENT_ID)
+            imgur.upload(file.path, (err, img) => {
+                if (err) console.log(err)
+                return User.findByPk(id)
+                    .then(user => {
+                        update.image = file ? image.data.link : user.image
+                        user.update(update)
+                            .then(user => {
+                                req.flash('success_msg', 'Profile was successfully updated!')
+                                res.redirect(`/users/${id}`)
+                            })
                     })
-                }else{
-                    console.log('if else file',req.body)
-                    user.update({name: req.body.name})
-                }
             })
-            .then(user => {
-                req.flash('success_msg', 'profile was successfully updated!')
-                res.redirect(`/users/${req.params.id}`)
-            })
+        } else {
+            return User.findByPk(id)
+                .then(user => {
+                    update.image = user.image
+                    user.update(update)
+                        .then(user => {
+                            req.flash('success_msg', 'Profile was successfully updated!')
+                            res.redirect(`/users/${id}`)
+                        })
+                })
+        }
     }
 }
 
