@@ -3,6 +3,8 @@ const db = require('../models')
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const User = db.User
+const Comment = db.Comment
+const Restaurant = db.Restaurant
 
 let userController = {
     signUpPage: (req, res) => {
@@ -44,20 +46,30 @@ let userController = {
         res.redirect('/signin')
     },
     getUser: (req, res) => {
-        // if(req.user.id !== Number(req.params.id)){
-        //     return res.redirect('/restaurants')
-        // }
-        //辨別使用者但會使測試失敗
-        User.findByPk(req.params.id)
-            .then(user => {
-                res.render('profile', { user: user.toJSON() })
+        const { id } = req.params
+        Comment.findAll({
+            where: { UserId: id },
+            include: [Restaurant],
+            raw: true,
+            nest: true
+        })
+            .then(comments => {
+                User.findByPk(id)
+                    .then(user => {
+                        const commentedRestaurantsId = []
+                        const commentedRestaurants = []
+                        comments.forEach(comment => {
+                            if(!commentedRestaurantsId.some(id => id === comment.RestaurantId)){
+                                commentedRestaurantsId.push(comment.RestaurantId)
+                                commentedRestaurants.push({RestaurantId:comment.RestaurantId, RestaurantImage: comment.Restaurant.image})
+                            }
+                        })
+                        console.log(commentedRestaurants)
+                        res.render('profile', {user: user.toJSON(), commentedRestaurants})
+                    })
             })
     },
     editUser: (req, res) => {
-        // if(req.user.id !== Number(req.params.id)){
-        //     return res.redirect('/restaurants')
-        // }
-        //辨別使用者但會使測試失敗
         User.findByPk(req.params.id)
             .then(user => {
                 res.render('edit-profile', { user: user.toJSON() })
