@@ -7,6 +7,7 @@ const Comment = db.Comment
 const Restaurant = db.Restaurant
 const Favorite = db.Favorite
 const Like = db.Like
+const helper = require('../_helpers')
 
 let userController = {
     signUpPage: (req, res) => {
@@ -66,7 +67,6 @@ let userController = {
                                 commentedRestaurants.push({RestaurantId:comment.RestaurantId, RestaurantImage: comment.Restaurant.image})
                             }
                         })
-                        console.log(commentedRestaurants)
                         res.render('profile', {user: user.toJSON(), commentedRestaurants})
                     })
             })
@@ -125,15 +125,17 @@ let userController = {
         })
     },
     addLike: (req, res) => {
+        const UserId = helper.getUser(req).id
         Like.create({
-            UserId: req.user.id,
+            UserId: UserId,
             RestaurantId: req.params.restaurantId
         })
             .then(() => res.redirect('back'))
     },
     removeLike: (req, res) => {
+        const UserId = helper.getUser(req).id
         Like.findOne({where: {
-            UserId: req.user.id,
+            UserId: UserId,
             RestaurantId: req.params.restaurantId
         }})
             .then(like => {

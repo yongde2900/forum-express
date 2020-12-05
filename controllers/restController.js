@@ -4,6 +4,7 @@ const Category = db.Category
 const Comment = db.Comment
 const User = db.User
 const pageLimit = 12
+const helper = require('../_helpers')
 let restController = {
     getRestaurants: (req, res) => {
         let offset = 0
@@ -38,7 +39,6 @@ let restController = {
                 isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
                 isLiked: req.user.LikedRestaurants.map(d => d.id).includes(r.id)
             }))
-            console.log(data[0])
             Category.findAll({
                 raw: true,
                 nest: true
@@ -58,8 +58,8 @@ let restController = {
     getRestaurant: (req, res) => {
         Restaurant.findByPk(req.params.id, { include: [Category, { model: Comment, include: [User] }, { model: User, as: 'FavoritedUsers' }, { model: User, as: 'LikedUsers' }] })
             .then(restaurant => {
-                const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
-                const isLiked = restaurant.LikedUsers.map(d => d.id).includes(req.user.id)
+                const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(helper.getUser(req).id)
+                const isLiked = restaurant.LikedUsers.map(item => item.id).includes(helper.getUser(req).id)
                 restaurant.viewCounts += 1
                 restaurant.save()
                     .then(restaurant => res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited, isLiked }))
