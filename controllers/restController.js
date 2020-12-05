@@ -35,8 +35,10 @@ let restController = {
             const data = result.rows.map(r => ({
                 ...r,
                 description: r.description.substring(0, 50),
-                isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
+                isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+                isLiked: req.user.LikedRestaurants.map(d => d.id).includes(r.id)
             }))
+            console.log(data[0])
             Category.findAll({
                 raw: true,
                 nest: true
@@ -54,12 +56,13 @@ let restController = {
         })
     },
     getRestaurant: (req, res) => {
-        Restaurant.findByPk(req.params.id, { include: [Category, { model: Comment, include: [User] }, {model: User, as: 'FavoritedUsers' }] })
+        Restaurant.findByPk(req.params.id, { include: [Category, { model: Comment, include: [User] }, { model: User, as: 'FavoritedUsers' }, { model: User, as: 'LikedUsers' }] })
             .then(restaurant => {
                 const isFavorited = restaurant.FavoritedUsers.map(d => d.id).includes(req.user.id)
-                restaurant.viewCounts += 1 
+                const isLiked = restaurant.LikedUsers.map(d => d.id).includes(req.user.id)
+                restaurant.viewCounts += 1
                 restaurant.save()
-                    .then(restaurant => res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited }))
+                    .then(restaurant => res.render('restaurant', { restaurant: restaurant.toJSON(), isFavorited, isLiked }))
             })
     },
     getFeeds: (req, res) => {
@@ -81,20 +84,20 @@ let restController = {
                 })
             ]
         )
-        .then(([restaurants, comments]) => {
-            return res.render('feeds', {restaurants, comments})
-        })
+            .then(([restaurants, comments]) => {
+                return res.render('feeds', { restaurants, comments })
+            })
     },
     getDashboard: (req, res) => {
-        const {id} = req.params
+        const { id } = req.params
         Promise.all([
             Comment.findAndCountAll({
-                where: {UserId: id},
+                where: { UserId: id },
             }),
-            Restaurant.findByPk(id, {include:[Category], raw: true, nest: true})
+            Restaurant.findByPk(id, { include: [Category], raw: true, nest: true })
         ])
             .then(([result, restaurant]) => {
-                res.render('dashboard', {restaurant, commentCount: result.count})
+                res.render('dashboard', { restaurant, commentCount: result.count })
             })
     }
 }
