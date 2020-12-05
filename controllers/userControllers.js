@@ -5,6 +5,7 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const User = db.User
 const Comment = db.Comment
 const Restaurant = db.Restaurant
+const Favorite = db.Favorite
 
 let userController = {
     signUpPage: (req, res) => {
@@ -104,6 +105,23 @@ let userController = {
                         })
                 })
         }
+    },
+    addFavorite: (req, res) => {
+        Favorite.create({
+            UserId: req.user.id,
+            RestaurantId: req.params.id
+        })
+            .then(() => res.redirect('back'))
+    },
+    removeFavorite: (req, res) => {
+        Favorite.findOne({where: {
+            UserId: req.user.id,
+            RestaurantId: req.params.id
+        }})
+        .then(favorite => {
+            favorite.destroy()
+                .then(() => res.redirect('back'))
+        })
     }
 }
 
