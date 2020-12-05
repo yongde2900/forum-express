@@ -55,7 +55,9 @@ let restController = {
     getRestaurant: (req, res) => {
         Restaurant.findByPk(req.params.id, { include: [Category, { model: Comment, include: [User] }] })
             .then(restaurant => {
-                res.render('restaurant', { restaurant: restaurant.toJSON() })
+                restaurant.viewCounts += 1 
+                restaurant.save()
+                    .then(restaurant => res.render('restaurant', { restaurant: restaurant.toJSON() }))
             })
     },
     getFeeds: (req, res) => {
@@ -90,7 +92,6 @@ let restController = {
             Restaurant.findByPk(id, {include:[Category], raw: true, nest: true})
         ])
             .then(([result, restaurant]) => {
-                console.log(restaurant)
                 res.render('dashboard', {restaurant, commentCount: result.count})
             })
     }
