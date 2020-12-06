@@ -160,13 +160,11 @@ let userController = {
     addFollowing: (req, res) => {
         const followerId = helper.getUser(req).id
         const followingId = req.params.id
-        console.log(followerId, followingId)
         Followship.create({followerId, followingId}).then(() => res.redirect('back'))
     },
     removeFollowing: (req, res) => {
         const followerId = helper.getUser(req).id
         const followingId = req.params.id
-        console.log(followerId, followingId)
         Followship.findOne({where: {
             followerId: followerId,
             followingId: followingId
