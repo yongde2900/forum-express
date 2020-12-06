@@ -79,5 +79,9 @@ module.exports = (app, passport) => {
   //like
   app.post('/like/:restaurantId', authenticated, userController.addLike)
   app.delete('/like/:restaurantId', authenticated, userController.removeLike)
+
+  //followship
+  app.post('/following/:id', authenticated, userController.addFollowing)
+  app.delete('/following/:id', authenticated, userController.removeFollowing)
 }
 
