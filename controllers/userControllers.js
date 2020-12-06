@@ -142,6 +142,19 @@ let userController = {
                 like.destroy()
                     .then(() => res.redirect('back'))
             })
+    },
+    getTopUsers : (req, res) => {
+        User.findAll({
+            include: [{model: User, as: 'Followers'}]
+        }).then(users => {
+            users = users.map(users => ({
+                ...users.dataValues,
+                FollowerCount: users.dataValues.Followers.length,
+                isFollowed: helper.getUser(req).Followings.map(d => d.id).includes(users.dataValues.id)
+            }))
+            users = users.sort((a,b) => b.FollowerCount - a.FollowerCount)
+            return res.render('topUser', {users})
+        })
     }
 }
 
