@@ -9,7 +9,6 @@ const db = require('../models')
 const helpers = require('../_helpers');
 
 describe('# A21: Like / Unlike', function() {
-    
   context('# Q1: 使用者可以 Like 餐廳', () => {
     before(async() => {
       this.ensureAuthenticated = sinon.stub(
@@ -18,7 +17,6 @@ describe('# A21: Like / Unlike', function() {
       this.getUser = sinon.stub(
         helpers, 'getUser'
       ).returns({id: 1, Followings: []});
-
       await db.User.destroy({where: {},truncate: true})
       await db.Category.destroy({where: {},truncate: true})
       await db.Restaurant.destroy({where: {},truncate: true})
