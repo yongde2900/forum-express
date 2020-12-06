@@ -18,7 +18,6 @@ describe('# A23: 【選修】更新 User Profile ', function() {
       this.getUser = sinon.stub(
         helpers, 'getUser'
       ).returns({id: 1, Followings: []});
-
       await db.User.destroy({where: {},truncate: true})
       await db.Category.destroy({where: {},truncate: true})
       await db.Restaurant.destroy({where: {},truncate: true})

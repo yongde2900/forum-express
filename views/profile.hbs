@@ -1,6 +1,6 @@
 {{> msg}}
 <div class="card d-flex flex-row">
-    <img src="{{user.image}}" class="card-img-top rounded-circle" alt="..." style="width: 320px;">
+    <img src="{{user.image}}" class="card-img-top rounded-circle m-3" alt="..." style="width: 240px;">
     <div class="card-body">
         <h3>{{user.name}}</h3>
         <p>{{user.email}}</p>
@@ -8,14 +8,50 @@
     </div>
 </div>
 <br>
-<div class="card">
-    <nav class="navbar navbar-dark bg-light">
-        <h3>{{commentedRestaurants.length}}家已評論的餐聽</h3>
-    </nav>
-    <div class="p-3  d-flex flex-row flex-wrap">
-        {{#each commentedRestaurants}}
-        <a href="/restaurants/{{this.RestaurantId}}" class="mr-3 my-1"><img src="{{this.RestaurantImage}}" alt=""
-                style="width: 150px;"></a>
-        {{/each}}
+<div class="row">
+    <div class="card col-6" style="min-height: 320px;">
+        <nav class="navbar navbar-dark bg-light">
+            <h3><strong>{{commentedRestaurants.length}}</strong> 已評論餐廳</h3>
+        </nav>
+        <div class="p-3  d-flex flex-row flex-wrap">
+            {{#each commentedRestaurants}}
+            <a href="/restaurants/{{this.RestaurantId}}" class="mr-3 my-1"><img src="{{this.RestaurantImage}}" alt=""
+                    style="width: 150px;"></a>
+            {{/each}}
+        </div>
     </div>
+    <div class="card col-6" style="min-height: 320px;">
+        <nav class="navbar navbar-dark bg-light">
+            <h3><strong>{{user.FavoriteCount}}</strong> 收藏的餐廳</h3>
+        </nav>
+        <div class="p-3  d-flex flex-row flex-wrap">
+            {{#each user.FavoritedRestaurants}}
+            <a href="/restaurants/{{this.dataValues.id}}" class="mr-3 my-1"><img src="{{this.dataValues.image}}" alt=""
+                    style="width: 150px;"></a>
+            {{/each}}
+        </div>
+    </div>
+    <div class="card col-6" style="min-height: 320px;">
+        <nav class="navbar navbar-dark bg-light">
+            <h3><strong>{{user.FollowingsCount}}</strong> followings(追蹤者)</h3>
+        </nav>
+        <div class="p-3  d-flex flex-row flex-wrap">
+            {{#each user.Followings}}
+            <a href="/restaurants/{{this.dataValues.id}}" class="mr-3 my-1"><img src="{{this.dataValues.image}}" alt=""
+                    style="width: 150px;"></a>
+            {{/each}}
+        </div>
+    </div>
+    <div class="card col-6" style="min-height: 320px;">
+        <nav class="navbar navbar-dark bg-light">
+            <h3><strong>{{user.FollowersCount}}</strong> followers(追隨者)</h3>
+        </nav>
+        <div class="p-3  d-flex flex-row flex-wrap">
+            {{#each user.Followers}}
+            <a href="/restaurants/{{this.dataValues.id}}" class="mr-3 my-1"><img src="{{this.dataValues.image}}" alt=""
+                    style="width: 150px;"></a>
+            {{/each}}
+        </div>
+    </div>
+    
 </div>

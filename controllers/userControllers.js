@@ -58,7 +58,13 @@ let userController = {
             nest: true
         })
             .then(comments => {
-                User.findByPk(id)
+                User.findByPk(id, {
+                    include:[
+                        {model: User, as: 'Followings'},
+                        {model: User, as: 'Followers'},
+                        {model: Restaurant, as: 'FavoritedRestaurants'}
+                    ]
+                })
                     .then(user => {
                         const commentedRestaurantsId = []
                         const commentedRestaurants = []
@@ -68,7 +74,16 @@ let userController = {
                                 commentedRestaurants.push({RestaurantId:comment.RestaurantId, RestaurantImage: comment.Restaurant.image})
                             }
                         })
-                        res.render('profile', {user: user.toJSON(), commentedRestaurants})
+                        user = {
+                            ...user.dataValues,
+                            commentedRestaurants: commentedRestaurants,
+                            commentedCount: commentedRestaurants.length,
+                            FollowingsCount: user.dataValues.Followings.length,
+                            FollowersCount: user.dataValues.Followers.length,
+                            FavoriteCount: user.dataValues.FavoritedRestaurants.length
+                        }
+
+                        res.render('profile', {user: user, commentedRestaurants})
                     })
             })
     },
