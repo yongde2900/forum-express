@@ -29,7 +29,7 @@ let adminService = {
         const { name, tel, address, opening_hours, description, categoryId } = req.body
         const { file } = req
         if (!req.body.name) {
-            return callback({status:'error', message: "name didn't exist"})
+            return callback({ status: 'error', message: "name didn't exist" })
         }
         if (file) {
             imgur.setClientID(IMGUR_CLIENT_ID)
@@ -43,7 +43,7 @@ let adminService = {
                     CategoryId: categoryId
                 })
                     .then(restaurant => {
-                        return callback({status: 'success', message: 'restaurant was successfully created!'})
+                        return callback({ status: 'success', message: 'restaurant was successfully created!' })
                     })
             })
         } else {
@@ -56,9 +56,45 @@ let adminService = {
                 CategoryId: categoryId
             })
                 .then(restaurant => {
-                    return callback({status: 'success', message: 'restaurant was successfully created!'})
+                    return callback({ status: 'success', message: 'restaurant was successfully created!' })
                 })
         }
+    },
+    putRestaurant: (req, res, callback) => {
+        const { name, tel, address, opening_hours, description, categoryId } = req.body
+        const { file } = req
+        if (!req.body.name) {
+            return callback({status: 'error', message: "name didn't exist"})
+        }
+        return Restaurant.findByPk(req.params.id)
+            .then(restaurant => {
+                if (file) {
+                    imgur.setClientID(IMGUR_CLIENT_ID)
+                    imgur.upload(file.path, (err, img) => {
+                        restaurant.update({
+                            name,
+                            tel,
+                            address,
+                            opening_hours,
+                            description,
+                            image: file ? img.data.link : restaurant.img,
+                            CategoryId: categoryId
+                        })
+                    })
+                } else {
+                    restaurant.update({
+                        name,
+                        tel,
+                        opening_hours,
+                        address,
+                        description, image: restaurant.image,
+                        CategoryId: categoryId
+                    })
+                }
+            })
+            .then(restaurant => {
+                return callback({status: 'success', message: 'restaurant was successfully to update'})
+            })
     },
     deleteRestaurant: (req, res, callback) => {
         return Restaurant.findByPk(req.params.id)
