@@ -67,9 +67,9 @@ let adminController = {
             nest: true,
         })
             .then(restaurant => {
-                Category.findAll({raw: true})
+                Category.findAll({ raw: true })
                     .then(categories => {
-                        return res.render('admin/create', {restaurant, categories})
+                        return res.render('admin/create', { restaurant, categories })
                     })
             })
     },
@@ -112,12 +112,18 @@ let adminController = {
             })
     },
     deleteRestaurant: (req, res) => {
-        return Restaurant.findByPk(req.params.id)
-            .then(restaurant => restaurant.destroy())
-            .then(() => {
+        return adminService.deleteRestaurant(req, res, (data) => {
+            if (data.status === 'success') {
                 req.flash('success_msg', 'restaurant was successfully to delete')
                 res.redirect('/admin/restaurants')
-            })
+            }
+        })
+        // return Restaurant.findByPk(req.params.id)
+        //     .then(restaurant => restaurant.destroy())
+        //     .then(() => {
+        //         req.flash('success_msg', 'restaurant was successfully to delete')
+        //         res.redirect('/admin/restaurants')
+        //     })
     },
     getUser: (req, res) => {
         return User.findAll({ raw: true })
