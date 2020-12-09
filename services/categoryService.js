@@ -33,6 +33,14 @@ let categoryService = {
             .then(() => {
                 return callback({ status: 'success', message: 'Category was successfully created !' })
             })
+    },
+    deleteCategory: (req, res, callback) => {
+        console.log(req.params.id)
+        Category.findByPk(req.params.id)
+            .then(category => category.destroy())
+            .then(() => {
+                callback({status: 'success', message: 'Category was successfully deleted !'})
+            })
     }
 }
 module.exports = categoryService
