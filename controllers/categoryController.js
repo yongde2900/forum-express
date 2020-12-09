@@ -8,11 +8,14 @@ let categoryController = {
         })
     },
     postCategory: (req, res) => {
-        Category.create({name: req.body.name})
-            .then(category => {
-                req.flash('success_msg', 'Category was successfully created !')
-                res.redirect('/admin/categories')
-            })
+        categoryService.postCategory(req, res, (data) => {
+            if(data.status === 'error') {
+                req.flash('error_msg', data.message)
+                return res.redirect('/admin/categories')
+            }
+            req.flash('success_msg', data.message)
+            return res.redirect('/admin/categories')
+        })
     },
     putCategory: (req, res) => {
         Category.findByPk(req.params.id)
