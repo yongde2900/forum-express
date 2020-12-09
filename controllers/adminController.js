@@ -19,42 +19,14 @@ let adminController = {
             })
     },
     postRestaurant: (req, res) => {
-        const { name, tel, address, opening_hours, description, categoryId } = req.body
-        const { file } = req
-        if (!req.body.name) {
-            req.flash('error_msg', "Name didn't exist")
-            return res.redirect('back')
-        }
-        if (file) {
-            imgur.setClientID(IMGUR_CLIENT_ID)
-            imgur.upload(file.path, (err, img) => {
-                return Restaurant.create({
-                    name,
-                    tel,
-                    address,
-                    opening_hours,
-                    description, image: file ? img.data.link : null,
-                    CategoryId: categoryId
-                })
-                    .then(restaurant => {
-                        req.flash('success_msg', 'restaurant was successfully created')
-                        res.redirect('/admin/restaurants')
-                    })
-            })
-        } else {
-            return Restaurant.create({
-                name,
-                tel,
-                address,
-                opening_hours,
-                description, image: null,
-                CategoryId: categoryId
-            })
-                .then(restaurant => {
-                    req.flash('success_msg', 'restaurant was successfully created!')
-                    res.redirect('/admin/restaurants')
-                })
-        }
+        adminService.postRestaurant(req, res, (data) => {
+            if(data.status === 'error'){
+                req.flash('error_msg', data.message)
+                return res.redirect('/admin/restaurants')
+            }
+                req.flash('success_msg', data.message)
+                res.redirect('/admin/restaurants')
+        })
     },
     getRestaurant: (req, res) => {
         return adminService.getRestaurant(req, res, (data) => {
@@ -118,12 +90,6 @@ let adminController = {
                 res.redirect('/admin/restaurants')
             }
         })
-        // return Restaurant.findByPk(req.params.id)
-        //     .then(restaurant => restaurant.destroy())
-        //     .then(() => {
-        //         req.flash('success_msg', 'restaurant was successfully to delete')
-        //         res.redirect('/admin/restaurants')
-        //     })
     },
     getUser: (req, res) => {
         return User.findAll({ raw: true })
