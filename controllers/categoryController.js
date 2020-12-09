@@ -1,5 +1,5 @@
 const db = require('../models')
-const Category = db. Category
+const Category = db.Category
 const categoryService = require('../services/categoryService')
 let categoryController = {
     getCategories: (req, res) => {
@@ -9,7 +9,7 @@ let categoryController = {
     },
     postCategory: (req, res) => {
         categoryService.postCategory(req, res, (data) => {
-            if(data.status === 'error') {
+            if (data.status === 'error') {
                 req.flash('error_msg', data.message)
                 return res.redirect('/admin/categories')
             }
@@ -18,14 +18,14 @@ let categoryController = {
         })
     },
     putCategory: (req, res) => {
-        Category.findByPk(req.params.id)
-            .then(category => {
-                category.update({name: req.body.name})
-            })
-            .then(() => {
-                req.flash('success_msg', 'Category was successfully updated !')
-                res.redirect('/admin/categories')
-            })
+        categoryService.putCategory(req, res, (data) => {
+            if (data.status === 'error') {
+                req.flash('error_msg', data.message)
+                return res.redirect('/admin/categories')
+            }
+            req.flash('success_msg', data.message)
+            return res.redirect('/admin/categories')
+        })
     },
     deleteCategory: (req, res) => {
         Category.findByPk(req.params.id)
